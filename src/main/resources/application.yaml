@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: kotlin-quartz
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/quartz
+    username: postgres
+    password: 198725
+  quartz:
+    job-store-type: jdbc #Database Mode
+    jdbc:
+      initialize-schema: never #Do not initialize table structure
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO #Default hostname and timestamp generate instance ID, which can be any string, but must be the only corresponding qrtz_scheduler_state INSTANCE_NAME field for all dispatchers
+            #instanceName: clusteredScheduler #quartzScheduler
+          jobStore:
+            #            a few problems with the two properties below: https://github.com/spring-projects/spring-boot/issues/28758#issuecomment-974628989 & https://github.com/quartz-scheduler/quartz/issues/284
+            #            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore #Persistence Configuration
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate #We only make database-specific proxies for databases
+            #            useProperties: true #Indicates that JDBC JobStore stores all values in JobDataMaps as strings, so more complex objects can be stored as name-value pairs rather than serialized in BLOB columns.In the long run, this is safer because you avoid serializing non-String classes to BLOB class versions.
+            tablePrefix: QRTZ_  #Database Table Prefix
+            misfireThreshold: 60000 #The number of milliseconds the dispatcher will "tolerate" a Trigger to pass its next startup time before being considered a "fire".The default value (if you do not enter this property in the configuration) is 60000 (60 seconds).
+            clusterCheckinInterval: 5000 #Set the frequency (in milliseconds) of this instance'checkin'* with other instances of the cluster.Affects the speed of detecting failed instances.
+            isClustered: true #Turn on Clustering
+          threadPool: #Connection Pool
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 3
+            threadPriority: 1
+            threadsInheritContextClassLoaderOfInitializingThread: true
+
+liquibase:
+  change-log: db/changelog/db.changelog-master.yaml
+
+quartz:
+  enabled: true

@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: quartz-init
+      author: iasokolov
+      comment: Init Quartz table
+      changes:
+        - sqlFile:
+            path: changelog.sql
+            relativeToChangelogFile: true
