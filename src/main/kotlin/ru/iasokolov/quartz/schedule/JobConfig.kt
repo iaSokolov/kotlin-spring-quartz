@@ -6,7 +6,6 @@ import org.quartz.JobDetail
 import org.quartz.JobBuilder
 import org.quartz.TriggerBuilder
 import org.quartz.CronScheduleBuilder
-
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.support.JdbcTransactionManager
@@ -19,11 +18,9 @@ class JobConfig {
         return JobBuilder
             .newJob(SomeJob::class.java).withIdentity("SomeJob")
             .withDescription("Some job")
-            // Устанавливаем данное значение в true, если хотим, чтобы джоба была перезапущена
-            // в случае падения пода
-            .requestRecovery(true)
-            // не удаляем задание из базы даже в случае, если ни один из триггеров на задание не укаывает
-            .storeDurably().build()
+            .requestRecovery(true) // Устанавливаем данное значение в true, если хотим, чтобы джоба была перезапущена в случае падения пода
+            .storeDurably() // не удаляем задание из базы даже в случае, если ни один из триггеров на задание не укаывает
+            .build()
     }
 
     //Trigger
