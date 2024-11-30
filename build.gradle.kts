@@ -29,8 +29,8 @@ dependencies {
 
 	// Database
 	implementation("org.liquibase:liquibase-core")
-    implementation("org.testng:testng:7.1.0")
-    runtimeOnly("org.postgresql:postgresql")
+    	implementation("org.testng:testng:7.1.0")
+    	runtimeOnly("org.postgresql:postgresql")
 
 	// Logging
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
