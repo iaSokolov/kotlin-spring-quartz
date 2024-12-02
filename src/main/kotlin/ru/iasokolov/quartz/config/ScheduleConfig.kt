@@ -1,38 +1,18 @@
-package ru.iasokolov.quartz.schedule
+package ru.iasokolov.quartz.config
 
 import org.quartz.Scheduler
 import org.quartz.Trigger
-import org.quartz.JobDetail
-import org.quartz.JobBuilder
-import org.quartz.TriggerBuilder
-import org.quartz.CronScheduleBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.support.JdbcTransactionManager
 import org.springframework.scheduling.quartz.SchedulerFactoryBean
 
 @Configuration
-class JobConfig {
-    @Bean
-    fun someJobDetail(): JobDetail {
-        return JobBuilder
-            .newJob(SomeJob::class.java).withIdentity("SomeJob")
-            .withDescription("Some job")
-            .requestRecovery(true) // Устанавливаем данное значение в true, если хотим, чтобы джоба была перезапущена в случае падения пода
-            .storeDurably() // не удаляем задание из базы даже в случае, если ни один из триггеров на задание не укаывает
-            .build()
-    }
-
-    //Trigger
-    @Bean
-    fun someJobTrigger(
-        someJobDetail: JobDetail
-    ): Trigger {
-        return TriggerBuilder.newTrigger().forJob(someJobDetail)
-            .withIdentity("SomeJobTrigger")
-            .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
-            .build()
-
+class ScheduleConfig(
+    private val factory: SchedulerFactoryBean
+) {
+    companion object {
+        const val START_DELAYED_SECONDS = 60
     }
 
     // Необходимо также при старте пересоздавать уже имеющиеся задания
@@ -41,16 +21,15 @@ class JobConfig {
     @Bean
     fun scheduler(
         triggers: List<Trigger>,
-        jobDetails: List<JobDetail>,
-        factory: SchedulerFactoryBean
     ): Scheduler {
         factory.setWaitForJobsToCompleteOnShutdown(true)
         val scheduler = factory.scheduler
+
+        scheduler.startDelayed(START_DELAYED_SECONDS)
         factory.setOverwriteExistingJobs(true)
         //https://stackoverflow.com/questions/39673572/spring-quartz-scheduler-race-condition
         factory.setTransactionManager(JdbcTransactionManager())
         rescheduleTriggers(triggers, scheduler)
-        scheduler.start()
         return scheduler
     }
 

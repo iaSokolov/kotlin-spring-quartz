@@ -7,9 +7,9 @@ spring:
     username: postgres
     password: 198725
   quartz:
-    job-store-type: jdbc #Database Mode
+    job-store-type: jdbc # Database Mode
     jdbc:
-      initialize-schema: never #Do not initialize table structure
+      initialize-schema: never # Do not initialize table structure: always, never
     properties:
       org:
         quartz:
@@ -30,9 +30,6 @@ spring:
             threadCount: 3
             threadPriority: 1
             threadsInheritContextClassLoaderOfInitializingThread: true
-
+    auto-startup: true
 liquibase:
   change-log: db/changelog/db.changelog-master.yaml
-
-quartz:
-  enabled: true
